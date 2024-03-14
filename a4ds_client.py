@@ -47,12 +47,25 @@ def send(server:str, port:int, username:str, password:str, message:str, bio:str=
     rectime = time.time()
 
     keycmds = ('0: initially connecting user to the server', '3: user wants to send a direct message to another user')
-   
+
+    # send a direct message functionality
+    if (message == '3: user wants to send a direct message to another user') and (bio is None):
+      recipient = input('Who do you want to send the message to?: ')
+      the_msg = input('Write a message to send: ')
+
+      send_resp = dm_send_cmd(dsp, token, the_msg, recipient, rectime)
+      send_data = extract_json(send_resp)
+
+      if send_data.type == "ok":
+        return_resp(send_data) # implement Profile class
+      elif send_data.type == "error":
+        return_resp(send_data)
+
   # add post functionality
     if (message != '') and (message not in keycmds) and (bio is None):
       send_resp = send_cmd(dsp, token, 'post', message, rectime)
       send_data = extract_json(send_resp)
-    
+
       if send_data.type == "ok":
         post = Post(message)
         Profile()
@@ -79,16 +92,12 @@ def send(server:str, port:int, username:str, password:str, message:str, bio:str=
       else:
         return False
 
-  # send a direct message functionality
-    if (message == '3: user wants to send a direct message to another user') and (bio is None):
-      recipient = input('Who do you want to send the message to?: ')
-      the_msg = input('Write a message to send:')
-
   except Exception as e:
     print(e)
     return False
   else:
     return True
+
 
 
 def connect_to_server(server, port):
@@ -98,7 +107,7 @@ def connect_to_server(server, port):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.connect(server_address)
     return sock
-  except:
+  except Exception:
     return None
   
 
@@ -151,8 +160,16 @@ def return_resp(response):
     print(response.response['message'] + "\n")
 
 
-def send_cmd(dsp, token, cmd_type, message, time):
-  '''builds a command to send to the server'''
-  cmd = sbuild_cmd({'token': token, cmd_type: {'entry': message, 'timestamp': time}})
+def send_cmd(dsp, token, cmd_type, message, timestamp):
+  '''builds a command to send to the server, EXCEPT for when the user sends direct messages'''
+  cmd = sbuild_cmd({'token': token, cmd_type: {'entry': message, 'timestamp': timestamp}})
+  dsp.write_cmd(cmd)
+  return dsp.read_cmd()
+
+
+def dm_send_cmd(dsp, token, msg, recipient, timestamp):
+  '''builds a command to send to the server to send direct messages'''
+  direct_msg_dict = {"entry": msg,"recipient": recipient, "timestamp": timestamp}
+  cmd = sbuild_cmd({"token": token, "directmessage": direct_msg_dict})
   dsp.write_cmd(cmd)
   return dsp.read_cmd()

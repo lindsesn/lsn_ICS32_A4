@@ -15,7 +15,7 @@ def options(server, port, usern, pwd, msg):
     '''gives the user options to do things on the server like add a post, edit their bio, etc.'''
     quit_program = False
     while quit_program is False:
-        action = input("\nWhat would you like to do?\n1. Add a post\n2. Edit your bio\n\nType the number(s) for your desired actions to continue or type 'q' if you would like to quit the program\n") 
+        action = input("\nWhat would you like to do?\n1. Add a post\n2. Edit your bio\n3. Send a direct message\n\nType the number(s) for your desired actions to continue or type 'q' if you would like to quit the program\n") 
         if "1" in action:
             msg = input("Write a message for your post: ")
             send(server, port, usern, pwd, msg)

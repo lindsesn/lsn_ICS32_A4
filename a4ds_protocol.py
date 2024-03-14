@@ -61,11 +61,11 @@ class DS_PROTOCOL:
 def build_cmd(key, value):
     '''builds the command to connect to the server'''
     cmd = {key: value}
-    jcmd = json.dumps(cmd, indent = 4)
+    jcmd = json.dumps(cmd, indent = 4) # jcmd stands for command turned to json format
     return jcmd
 
 
 def sbuild_cmd(cmd):
-  '''builds the commands for server functionalities like adding a post or editing the user's bio'''
+  '''builds the commands for server functionalities EXCEPT for connecting to the server'''
   jcmd = json.dumps(cmd, indent = 4)
   return jcmd
