@@ -92,6 +92,7 @@ def send(server:str, port:int, username:str, password:str, message:str, bio:str=
 
 
 def connect_to_server(server, port):
+  '''creates a socket to connect to the server'''
   try:
     server_address = (server, port)
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -102,6 +103,7 @@ def connect_to_server(server, port):
   
 
 def create_user(server, username, password):
+  '''instantiates Profile class to store user information'''
   user = Profile(server, username, password)
   return user
 
@@ -120,12 +122,14 @@ def save_user(profile):
 
 
 def check_dsu_exists(path):
+  '''checks to see if the dsu file path exists'''
   p = Path(path)
   if p.exists():
     return True
 
 
 def create_dsu(p):
+  '''creates a new dsu file based on the user's input about where they want to store their user information'''
   with open(p, "w") as my_file:
     try:
         for line in my_file:
@@ -140,6 +144,7 @@ def create_dsu(p):
 
 
 def return_resp(response):
+  '''prints the response messages from the server'''
   if response.type == "ok":
     print(response.response['message'] + "\n")
   elif response.type == "error":
@@ -147,6 +152,7 @@ def return_resp(response):
 
 
 def send_cmd(dsp, token, cmd_type, message, time):
+  '''builds a command to send to the server'''
   cmd = sbuild_cmd({'token': token, cmd_type: {'entry': message, 'timestamp': time}})
   dsp.write_cmd(cmd)
   return dsp.read_cmd()

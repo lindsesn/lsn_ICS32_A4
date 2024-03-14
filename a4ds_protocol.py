@@ -41,6 +41,7 @@ class DS_PROTOCOL:
     self.sock = sock
   
   def write_cmd(self, msg):
+    '''sends commands to the server'''
     try:
       send = self.sock.makefile('w')
       send.write(msg + '\r\n')
@@ -49,6 +50,7 @@ class DS_PROTOCOL:
       return False
   
   def read_cmd(self):
+    '''reads the json sent from the server'''
     recv = self.sock.makefile('r')
 
     resp = recv.readline()
@@ -57,11 +59,13 @@ class DS_PROTOCOL:
 
 
 def build_cmd(key, value):
+    '''builds the command to connect to the server'''
     cmd = {key: value}
     jcmd = json.dumps(cmd, indent = 4)
     return jcmd
 
 
 def sbuild_cmd(cmd):
+  '''builds the commands for server functionalities like adding a post or editing the user's bio'''
   jcmd = json.dumps(cmd, indent = 4)
   return jcmd
