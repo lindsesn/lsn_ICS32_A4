@@ -33,10 +33,6 @@ def extract_json(json_msg:str) -> DataTuple:
 
 
 class DS_PROTOCOL:
-  # def format(username, password):
-  #   send_dict = {"join": {"username": username, "password": password, "token": ""}}
-  #   send_json = json.loads(send_dict)
-
   def __init__(self, sock):
     self.sock = sock
   

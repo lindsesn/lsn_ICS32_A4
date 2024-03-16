@@ -8,8 +8,6 @@
 
 import socket
 import time
-import io
-from pathlib import Path
 from a4Profile import Profile, Post
 from a4ds_protocol import DS_PROTOCOL, build_cmd, sbuild_cmd, extract_json
 
@@ -37,13 +35,11 @@ def send(server:str, port:int, username:str, password:str, message:str, bio:str=
 
     if server_data.type == "ok":
       token = server_data.response['token']
-      user = create_user(server, username, password) # creates a Profile class instance from user info
-      dsu_file = save_user(user) # saves user's profile in a dsu
       if (message == '0: initially connecting user to the server') and (bio is None): # if the conditions are satisfied (or when the user initially connnects to the server),  the console will print 'Welcome back' 
         return_resp(server_data)
     else: # send() returns False if server_data.type is not 'ok'
       return False
-    
+
     rectime = time.time()
 
     keycmds = ('0: initially connecting user to the server', '3: user wants to send a direct message to another user')
@@ -67,10 +63,6 @@ def send(server:str, port:int, username:str, password:str, message:str, bio:str=
       send_data = extract_json(send_resp)
 
       if send_data.type == "ok":
-        post = Post(message)
-        Profile()
-        user.add_post(post)
-        user.save_profile(dsu_file)
         return_resp(send_data)
       elif send_data.type == "error":
         return_resp(send_data)
@@ -83,9 +75,6 @@ def send(server:str, port:int, username:str, password:str, message:str, bio:str=
       send_data = extract_json(send_resp)
 
       if send_data.type == "ok":
-        Profile()
-        user.bio = bio
-        user.save_profile(dsu_file)
         return_resp(send_data)
       elif send_data.type == "error":
         return_resp(send_data)
@@ -109,47 +98,6 @@ def connect_to_server(server, port):
     return sock
   except Exception:
     return None
-  
-
-def create_user(server, username, password):
-  '''instantiates Profile class to store user information'''
-  user = Profile(server, username, password)
-  return user
-
-
-def save_user(profile):
-  '''saves the user's information in a dsu file by calling on the save_profile() method in Profile class'''
-  dsu_file_path = input('Provide the entire file path of where you would like to save your user information (must be a .dsu file): ')
-  dsu_exists = check_dsu_exists(dsu_file_path)
-  if dsu_exists is False:
-    created_dsu_file = create_dsu(dsu_file_path)
-    profile.save_profile(created_dsu_file)
-    return created_dsu_file
-  elif dsu_exists is True:
-    profile.save_profile(dsu_file_path)
-    return dsu_file_path
-
-
-def check_dsu_exists(path):
-  '''checks to see if the dsu file path exists'''
-  p = Path(path)
-  if p.exists():
-    return True
-
-
-def create_dsu(p):
-  '''creates a new dsu file based on the user's input about where they want to store their user information'''
-  with open(p, "w") as my_file:
-    try:
-        for line in my_file:
-            print(line)
-    except io.UnsupportedOperation: # reason why "import io" was placed in line 2
-        pass
-    except NameError:
-        print("NameError: please try again.")
-    except FileExistsError:
-        print("Error: file already exists, please try again")
-  return p
 
 
 def return_resp(response):
